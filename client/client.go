@@ -33,9 +33,6 @@ func sendMessages(conn net.Conn) {
 
 func listen(conn net.Conn) {
 	inputMessage := make(chan string)
-	go receiveMessages(conn, inputMessage)
-	sendMessages(conn)
-
 	go func() {
 		for {
 			select {
@@ -44,6 +41,9 @@ func listen(conn net.Conn) {
 			}
 		}
 	}()
+	go receiveMessages(conn, inputMessage)
+	sendMessages(conn)
+
 }
 
 func main() {

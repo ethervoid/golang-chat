@@ -17,6 +17,8 @@ func (server *Server) startHandlingConnections(ln net.Listener, room Room) {
 			fmt.Println("Error! ", err)
 		}
 
+		fmt.Println("Connection: ", conn)
+
 		room.joins <- conn
 	}
 }

@@ -11,7 +11,7 @@ type User struct {
 }
 
 func (user *User) listen(conn net.Conn) {
-	go user.receiveMessage(conn)
+	go user.showMessage(conn)
 	go user.sendMessage(conn)
 }
 
@@ -24,13 +24,14 @@ func (user *User) sendMessage(conn net.Conn) {
 			fmt.Println("[Error] Reading incoming message:", err.Error())
 		}
 
-		user.outputMessage <- string(message)
+		user.inputMessage <- string(message)
 	}
 }
 
-func (user *User) receiveMessage(conn net.Conn) {
+func (user *User) showMessage(conn net.Conn) {
 	for {
 		message := <-user.outputMessage
+		fmt.Println("Showing message: ", message)
 		_, err := conn.Write([]byte(message))
 		if err != nil {
 			fmt.Println("[Error] Writing message:", err.Error())

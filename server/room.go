@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net"
 )
 
@@ -20,7 +21,7 @@ func (room *Room) open() {
 			select {
 			case userJoin := <-room.joins:
 				room.newUser(userJoin)
-			case userMessage := <-room.inputMessage:
+			case userMessage := <-room.outputMessage:
 				room.showMessage(userMessage)
 			}
 		}
@@ -28,11 +29,14 @@ func (room *Room) open() {
 }
 
 func (room *Room) newUser(conn net.Conn) {
+	fmt.Println("Conectado: ", conn)
 	user := &User{make(chan string), make(chan string)}
 	room.users = append(room.users, user)
 
+	fmt.Println(room.users)
+
 	go func() {
-		room.outputMessage <- <-user.outputMessage
+		room.outputMessage <- <-user.inputMessage
 	}()
 
 	user.listen(conn)
