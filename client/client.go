@@ -12,7 +12,7 @@ func receiveMessages(conn net.Conn, channel chan string) {
 
 		_, err := conn.Read(message)
 		if err != nil {
-			fmt.Println("[Error] Reading incoming message:", err.Error())
+			fmt.Println("[Client Error] Reading incoming message:", err.Error())
 		}
 
 		channel <- string(message)
@@ -26,7 +26,7 @@ func sendMessages(conn net.Conn) {
 
 		_, err := conn.Write([]byte(input))
 		if err != nil {
-			fmt.Println("[Error] Writing message:", err.Error())
+			fmt.Println("[Client Error] Writing message:", err.Error())
 		}
 	}
 }
@@ -43,7 +43,6 @@ func listen(conn net.Conn) {
 	}()
 	go receiveMessages(conn, inputMessage)
 	sendMessages(conn)
-
 }
 
 func main() {

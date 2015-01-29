@@ -5,7 +5,7 @@ import (
 	"net"
 )
 
-const DEFAULT_ROOM_NAME = "lobby"
+const DEFAULT_ROOM_NAME = "Lobby"
 
 type Room struct {
 	name          string
@@ -45,6 +45,6 @@ func (room *Room) newUser(conn net.Conn) {
 func (room *Room) showMessage(userMessage string) {
 	//Iteramos por todos los usuarios y lanzamos el mensaje en el canal
 	for _, user := range room.users {
-		user.outputMessage <- userMessage
+		user.outputMessage <- "[" + room.name + "] " + userMessage
 	}
 }

@@ -29,12 +29,13 @@ func (user *User) sendMessage(conn net.Conn) {
 }
 
 func (user *User) showMessage(conn net.Conn) {
+	fmt.Println("[Debug] Showing user message")
 	for {
 		message := <-user.outputMessage
 		fmt.Println("Showing message: ", message)
 		_, err := conn.Write([]byte(message))
 		if err != nil {
-			fmt.Println("[Error] Writing message:", err.Error())
+			fmt.Println("[Server Error] Writing message:", err.Error())
 		}
 	}
 }
