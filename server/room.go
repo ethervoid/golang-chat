@@ -33,13 +33,15 @@ func (room *Room) newUser(conn net.Conn) {
 	user := &User{make(chan string), make(chan string)}
 	room.users = append(room.users, user)
 
-	fmt.Println(room.users)
-
-	go func() {
-		room.outputMessage <- <-user.inputMessage
-	}()
+	go room.listenUsersMessages(user)
 
 	user.listen(conn)
+}
+
+func (room *Room) listenUsersMessages(user *User) {
+	for {
+		room.outputMessage <- <-user.inputMessage
+	}
 }
 
 func (room *Room) showMessage(userMessage string) {
