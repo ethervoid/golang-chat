@@ -30,8 +30,8 @@ func (server *Server) start() {
 	room := Room{
 		DEFAULT_ROOM_NAME,
 		make(chan net.Conn, 10),
-		make(chan string),
-		make(chan string),
+		make(chan string, 10),
+		make(chan string, 10),
 		make([]*User, 0),
 	}
 	room.open()
