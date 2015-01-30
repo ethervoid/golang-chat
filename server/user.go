@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net"
 )
 
@@ -21,7 +22,12 @@ func (user *User) sendMessage(conn net.Conn) {
 
 		_, err := conn.Read(message)
 		if err != nil {
-			fmt.Println("[Error] Reading incoming message:", err.Error())
+			if err == io.EOF {
+				fmt.Println("User disconnected")
+				conn.Close()
+				break
+			}
+			fmt.Println("[Server Error] Reading incoming message:", err.Error())
 		}
 
 		user.inputMessage <- string(message)
