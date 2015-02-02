@@ -12,7 +12,7 @@ type Room struct {
 	joins         chan net.Conn
 	inputMessage  chan string
 	outputMessage chan string
-	users         []*User
+	users         map[string]*User
 }
 
 func (room *Room) open() {
@@ -30,10 +30,11 @@ func (room *Room) open() {
 
 func (room *Room) newUser(conn net.Conn) {
 	fmt.Println("Conectado: ", conn)
-	user := &User{make(chan string), make(chan string)}
-	room.users = append(room.users, user)
+	user := NewUser()
+	room.users[user.id] = user
 
 	go room.listenUsersMessages(user)
+	go room.listenUsersDisconnections(user)
 
 	user.listen(conn)
 }
@@ -41,6 +42,13 @@ func (room *Room) newUser(conn net.Conn) {
 func (room *Room) listenUsersMessages(user *User) {
 	for {
 		room.outputMessage <- <-user.inputMessage
+	}
+}
+
+func (room *Room) listenUsersDisconnections(user *User) {
+	for {
+		userToDelete := <-user.disconnect
+		delete(room.users, userToDelete)
 	}
 }
 

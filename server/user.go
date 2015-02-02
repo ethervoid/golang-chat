@@ -1,14 +1,35 @@
 package main
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"net"
+	"time"
 )
 
 type User struct {
+	id            string
 	inputMessage  chan string
 	outputMessage chan string
+	disconnect    chan string
+}
+
+func NewUser() *User {
+	userId := generateUserHash()
+	user := &User{
+		userId,
+		make(chan string),
+		make(chan string),
+		make(chan string)}
+	return user
+}
+
+func generateUserHash() string {
+	hasher := md5.New()
+	now := time.Now()
+	return hex.EncodeToString(hasher.Sum([]byte(now.String())))
 }
 
 func (user *User) listen(conn net.Conn) {
@@ -23,8 +44,9 @@ func (user *User) sendMessage(conn net.Conn) {
 		_, err := conn.Read(message)
 		if err != nil {
 			if err == io.EOF {
-				fmt.Println("User disconnected")
+				fmt.Println("User " + user.id + " disconnected")
 				conn.Close()
+				user.disconnect <- user.id
 				break
 			}
 			fmt.Println("[Server Error] Reading incoming message:", err.Error())

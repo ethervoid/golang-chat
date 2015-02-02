@@ -32,7 +32,7 @@ func (server *Server) start() {
 		make(chan net.Conn, 10),
 		make(chan string, 10),
 		make(chan string, 10),
-		make([]*User, 0),
+		make(map[string]*User),
 	}
 	room.open()
 
